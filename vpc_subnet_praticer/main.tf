@@ -121,6 +121,16 @@ resource "aws_security_group" "my_custom_sg" {
      ]
   }
 
+  ingress {
+    from_port = 80
+    to_port = 80
+    description = "For Web Server Nginx"
+    protocol = "tcp"
+    cidr_blocks = [
+      "0.0.0.0/0"
+    ]
+  }
+
   egress {
     from_port = 0
     to_port = 0
@@ -144,6 +154,9 @@ resource "aws_instance" "sample_ec2_instance" {
   security_groups = [
     aws_security_group.my_custom_sg.id
   ]
+  user_data = file(
+    "myscript.sh"
+  )
   tags = {
     Name : "Nginx Test Server"
   }
@@ -156,5 +169,6 @@ output "my_custom_vpc_cird_block" {
 output "public_ip_of_sample_ec2_instance" {
   value = aws_instance.sample_ec2_instance.public_ip
 }
+
 
 
