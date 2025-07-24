@@ -213,18 +213,12 @@ resource "aws_instance" "private_ec2_instance" {
 }
 
 output "public_ip_of_sample_ec2_instance" {
-  value = "Public IP : ${aws_instance.sample_ec2_instance.public_ip}"
+  value = aws_instance.sample_ec2_instance.public_ip
 }
 
 output "private_ip_of_private_ec2_instance" {
-  value = "Private IP : ${aws_instance.private_ec2_instance.private_ip}"
+  value = aws_instance.private_ec2_instance.private_ip
 }
-
-
-output "path" {
-  value = "${path.module} path"
-}
-
 
 
 
