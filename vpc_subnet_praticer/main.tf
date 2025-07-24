@@ -187,7 +187,7 @@ resource "aws_instance" "sample_ec2_instance" {
   instance_type               = "t2.micro"
   associate_public_ip_address = true
   key_name                    = aws_key_pair.testing_key_pair.key_name
-  security_groups = [
+  vpc_security_group_ids  = [
     aws_security_group.my_custom_sg_for_public_instance.id
   ]
   user_data = file(
@@ -204,7 +204,7 @@ resource "aws_instance" "private_ec2_instance" {
   subnet_id     = aws_subnet.private_subnet_A.id
   instance_type = "t2.micro"
   key_name      = aws_key_pair.testing_key_pair.key_name
-  security_groups = [
+  vpc_security_group_ids  = [
     aws_security_group.my_custom_sg_for_private_instance.id
   ]
   tags = {
