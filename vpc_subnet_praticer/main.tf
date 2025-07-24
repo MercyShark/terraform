@@ -51,9 +51,21 @@ resource "aws_route_table" "public_route_table" {
   }
 }
 
+resource "aws_route_table" "private_route_table" {
+  vpc_id = aws_vpc.my_custom_vpc.id
+  tags = {
+    Name : "Public Route Table"
+  }
+}
+
 resource "aws_route_table_association" "public_subnet_association_with_route_table" {
   route_table_id = aws_route_table.public_route_table.id
   subnet_id = aws_subnet.public_subnet_A.id
+}
+
+resource "aws_route_table_association" "private_subnet_association_with_route_table" {
+  route_table_id = aws_route_table.private_route_table.id
+  subnet_id = aws_subnet.private_subnet_A.id
 }
 
 resource "aws_subnet" "public_subnet_A" { 
@@ -107,7 +119,7 @@ data "external" "ip_lookup" {
   program = ["python", "${path.module}/get_public_ip.py"]
 }
 
-resource "aws_security_group" "my_custom_sg" {
+resource "aws_security_group" "my_custom_sg_for_public_instance" {
   name = "my_custom_sg"
   vpc_id = aws_vpc.my_custom_vpc.id
 
@@ -145,6 +157,43 @@ resource "aws_security_group" "my_custom_sg" {
   }
 }
 
+
+resource "aws_security_group" "my_custom_sg_for_private_instance" {
+  vpc_id = aws_vpc.my_custom_vpc.id
+  ingress {
+    from_port = 22
+    to_port = 22
+    description = "For Accessing the Private Instance via Bastion Public Instance"
+    protocol = "tcp"
+    security_groups = [ 
+      aws_security_group.my_custom_sg_for_public_instance.id
+    ]
+  }
+
+  ingress {
+    from_port   = 8
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = [
+      "0.0.0.0/0"
+    ] 
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = [
+      "0.0.0.0/0"
+    ]
+  }
+
+  tags = {
+    Name : "Private SG for Testing"
+  }
+}
+
+
 resource "aws_instance" "sample_ec2_instance" { 
   ami = var.ubuntu_ami_id
   subnet_id = aws_subnet.public_subnet_A.id
@@ -152,23 +201,40 @@ resource "aws_instance" "sample_ec2_instance" {
   associate_public_ip_address = true
   key_name = aws_key_pair.testing_key_pair.key_name
   security_groups = [
-    aws_security_group.my_custom_sg.id
+    aws_security_group.my_custom_sg_for_public_instance.id
   ]
   user_data = file(
     "myscript.sh"
   )
   tags = {
-    Name : "Nginx Test Server"
+    Name : "Bastion Host"
   }
 }
 
-output "my_custom_vpc_cird_block" {
-  value = aws_vpc.my_custom_vpc.cidr_block
+
+resource "aws_instance" "private_ec2_instance" { 
+  ami = var.ubuntu_ami_id
+  subnet_id = aws_subnet.private_subnet_A.id
+  instance_type = "t2.micro"
+  key_name = aws_key_pair.testing_key_pair.key_name
+  security_groups = [
+    aws_security_group.my_custom_sg_for_private_instance.id
+  ]
+  tags = {
+    Name : "Private Host"
+  }
 }
 
 output "public_ip_of_sample_ec2_instance" {
-  value = aws_instance.sample_ec2_instance.public_ip
+  value = "Public IP : ${aws_instance.sample_ec2_instance.public_ip}"
 }
+
+output "private_ip_of_private_ec2_instance" {
+  value = "Private IP : ${aws_instance.private_ec2_instance.private_ip}"
+}
+
+
+
 
 
 
