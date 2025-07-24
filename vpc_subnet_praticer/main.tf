@@ -204,7 +204,7 @@ resource "aws_instance" "sample_ec2_instance" {
     aws_security_group.my_custom_sg_for_public_instance.id
   ]
   user_data = file(
-    "myscript.sh"
+    "${path.module}/myscript.sh"
   )
   tags = {
     Name : "Bastion Host"
@@ -231,6 +231,11 @@ output "public_ip_of_sample_ec2_instance" {
 
 output "private_ip_of_private_ec2_instance" {
   value = "Private IP : ${aws_instance.private_ec2_instance.private_ip}"
+}
+
+
+output "path" {
+  value = "${path.module} path"
 }
 
 
