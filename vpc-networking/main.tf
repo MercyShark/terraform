@@ -38,10 +38,30 @@ resource "aws_route_table" "public_route_table" {
   }
 }
 
+
+resource "aws_eip" "my_elastic_ip_for_nat_gatway" {
+  depends_on = [ aws_internet_gateway.my_custom_itg ]
+}
+
+resource "aws_nat_gateway" "my_custom_nat_gateway" {
+
+  allocation_id = aws_eip.my_elastic_ip_for_nat_gatway.id
+  subnet_id = aws_subnet.public_subnet_A.id
+  tags = {
+    Name: "My Custom Nat Gatway"
+  }
+  depends_on = [ aws_internet_gateway.my_custom_itg]
+}
+
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.my_custom_vpc.id
   tags = {
     Name : "Public Route Table"
+  }
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.my_custom_nat_gateway.id
   }
 }
 
