@@ -17,7 +17,7 @@ resource "aws_vpc" "my_custom_vpc" {
     Name = "my_custom_vpc_made_with_terraform"
   }
 }
-
+ 
 resource "aws_internet_gateway" "my_custom_itg" {
   vpc_id = aws_vpc.my_custom_vpc.id
   tags = {
