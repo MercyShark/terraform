@@ -9,3 +9,4 @@ variable "private_subnet_b_cidr_block" {}
 
 variable "ubuntu_ami_id" {}
 variable "public_key_path" {}
+variable "private_key_path_for_bastion_host" {}

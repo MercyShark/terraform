@@ -210,6 +210,12 @@ resource "aws_instance" "sample_ec2_instance" {
   vpc_security_group_ids  = [
     aws_security_group.my_custom_sg_for_public_instance.id
   ]
+
+  provisioner "file" {
+      source = file(var.private_key_path_for_bastion_host)
+      destination = "/home/ubuntu/test_private_key"
+  }
+
   user_data = file(
     "${path.module}/myscript.sh"
   )
