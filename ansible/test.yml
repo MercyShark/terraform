@@ -1,0 +1,59 @@
+- name: Installing Docker
+  hosts: ec2
+  become: true
+  tasks:
+    - name: Installing Docker
+      ansible.builtin.dnf:
+        name:
+          - docker
+        state: present
+        update_cache: yes
+
+- name: Installing Docker Compose
+  hosts: ec2
+  tasks:
+    - name: Create Docker CLI plugins directory
+      file:
+        path: ~/.docker/cli-plugins
+        state: directory
+
+    - name: Get OS name
+      shell: uname -s
+      register: os_name
+
+    - name: Get architecture name
+      shell: uname -m
+      register: arch_name
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/v2.39.1/docker-compose-{{ os_name.stdout }}-{{ arch_name.stdout }}
+        dest: ~/.docker/cli-plugins/docker-compose
+        mode: '+x'
+
+- name: Starting Docker Daemon
+  hosts: ec2
+  become: yes
+  tasks:
+    - name: Start Docker
+      systemd:
+        name: docker
+        state: started
+
+- name: Add ec2-user to Docker group
+  hosts: ec2
+  become: yes
+  tasks:
+    - name: Add user to Docker group
+      user:
+        name: ec2-user
+        group: docker
+        append: yes
+
+- name: Test docker pull
+  hosts: ec2
+  tasks:
+    - name: Pull Docker image
+      docker_image:
+        name: redis
+        tag: latest

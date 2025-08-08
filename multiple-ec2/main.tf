@@ -14,6 +14,10 @@ provider "aws" {
 variable "ubuntu_ami_id" {}
 variable "public_key_path" {}
 variable "public_ip_address" {}
+variable "amazon_linux_ami_id" {}
+variable "windows_machine_ami_id" {
+  
+}
 
 resource "aws_key_pair" "testing_key_pair" {
   key_name   = "my test key"
@@ -28,12 +32,27 @@ resource "aws_security_group" "my_custom_sg" {
         cidr_blocks = [
             var.public_ip_address
         ]
-        
     }
+    ingress {
+      from_port = 80
+      to_port = 80
+      protocol = "tcp"
+      cidr_blocks = [ 
+        "0.0.0.0/0"
+       ]
+    }
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    cidr_blocks = [
+      "0.0.0.0/0"
+    ]
+  }
 }
 
 resource "aws_instance" "ubuntu_instances" {
-    count = 2
+    count = 1
     ami = var.ubuntu_ami_id
     instance_type = "t2.micro"
     associate_public_ip_address = true
