@@ -14,7 +14,9 @@ provider "aws" {
 
 
 variable "s3_bucket_name" {
-
+}
+variable "acm_certificate_arn" {
+  
 }
 
 resource "aws_s3_bucket" "my_bucket" {
@@ -66,6 +68,7 @@ resource "aws_s3_object" "index_file_upload" {
 }
 
 
+
 resource "aws_s3_object" "text_file_upload" {
   bucket = aws_s3_bucket.my_bucket.id
   key = "files/hello.txt"
@@ -103,8 +106,12 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   default_root_object = "index.html"
   viewer_certificate {
     cloudfront_default_certificate = true
+    acm_certificate_arn = var.acm_certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 
+  
   custom_error_response {
     error_code = 403
     response_code = 403
