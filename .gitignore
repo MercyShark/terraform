@@ -5,6 +5,8 @@
 *.tfstate
 *.tfstate.*
 
+*.env
+*access.log
 # Crash logs
 crash.log
 
@@ -31,3 +33,6 @@ override.tf.json
 .vscode/
 .idea/
 *.swp
+
+
+elasticSearch/es_data/*
