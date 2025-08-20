@@ -95,6 +95,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     origin_id = local.s3_origin_id
   }
 
+  aliases = [ "cdn.iamrishabh.tech"]
   comment = "Creating cdn for showing secure content"
   enabled =  true
   is_ipv6_enabled = true
@@ -132,10 +133,9 @@ default_cache_behavior {
 
   restrictions {
   geo_restriction {
-    restriction_type = "none" 
+    restriction_type = "whitelist"
+    locations = ["IN"] 
   }
-
-  
 
   }
     tags = {
