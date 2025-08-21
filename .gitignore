@@ -36,3 +36,7 @@ override.tf.json
 
 
 elasticSearch/es_data/*
+
+
+
+*.pem
