@@ -83,6 +83,15 @@ resource "aws_s3_object" "error_page" {
   source_hash = filemd5("${path.module}/error.html")
   content_type = "text/html"
 }
+
+resource "aws_s3_object" "cat_photo" {
+  bucket = aws_s3_bucket.my_bucket.id
+  key = "cat.jpg"
+  source = "${path.module}/cat.jpg"
+  source_hash = filemd5("${path.module}/cat.jpg")
+  content_type = "image/jpeg"
+}
+
 resource "aws_cloudfront_origin_access_control" "default" {
   name                              = "s3-oac"
   description                       = "Origin Access Control for S3"
@@ -90,6 +99,30 @@ resource "aws_cloudfront_origin_access_control" "default" {
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
 }
+
+resource "aws_cloudfront_public_key" "my_public_key" {
+    name = "cloudfront_public_key"
+    encoded_key = file("public_key.pem")
+
+   comment     = "Public key for signed URLs"
+
+    lifecycle {
+    prevent_destroy = true
+    ignore_changes = [ 
+      encoded_key
+     ]
+  }
+}
+
+resource "aws_cloudfront_key_group" "my_key_group" {
+    name = "cloudfront_key_group"
+    items = [ 
+      aws_cloudfront_public_key.my_public_key.id
+     ]
+}
+
+
+
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
@@ -105,7 +138,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   default_root_object = "index.html"
   viewer_certificate {
-    cloudfront_default_certificate = true
+    cloudfront_default_certificate = false
     acm_certificate_arn = var.acm_certificate_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
@@ -128,8 +161,13 @@ default_cache_behavior {
       query_string = false
       cookies {
         forward = "none"
-      }
+      } 
     }
+
+    trusted_key_groups = [
+      aws_cloudfront_key_group.my_key_group.id
+    ]
+    trusted_signers = []
 
     viewer_protocol_policy = "allow-all"
     min_ttl                = 0
