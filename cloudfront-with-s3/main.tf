@@ -161,7 +161,9 @@ default_cache_behavior {
       query_string = false
       cookies {
         forward = "none"
-      } 
+      }
+      headers = [ "Range" ]
+ 
     }
 
     trusted_key_groups = [
