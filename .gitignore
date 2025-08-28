@@ -40,3 +40,6 @@ elasticSearch/es_data/*
 
 
 *.pem
+
+lambda-function/package
+lambda-function/function.zip
