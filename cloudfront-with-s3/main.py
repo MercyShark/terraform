@@ -68,6 +68,6 @@ def generate_cloudfront_signed_url(url: str, expire_seconds: int):
 
 if __name__ == "__main__":
 
-    resource_url = "https://cdn.iamrishabh.tech/cat.jpg"
-    signed_url = generate_cloudfront_signed_url(resource_url, 10)  # Expires in 1 hour # time in seconds
+    resource_url = "https://cdn.iamrishabh.tech/output_video.mp4"
+    signed_url = generate_cloudfront_signed_url(resource_url, 3600)  # Expires in 1 hour # time in seconds
     print(signed_url)

@@ -106,12 +106,12 @@ resource "aws_cloudfront_public_key" "my_public_key" {
 
    comment     = "Public key for signed URLs"
 
-    lifecycle {
-    prevent_destroy = true
-    ignore_changes = [ 
-      encoded_key
-     ]
-  }
+  #   lifecycle {
+  #   prevent_destroy = true
+  #   ignore_changes = [ 
+  #     encoded_key
+  #    ]
+  # }
 }
 
 resource "aws_cloudfront_key_group" "my_key_group" {
