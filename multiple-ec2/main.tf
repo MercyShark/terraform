@@ -15,9 +15,7 @@ variable "ubuntu_ami_id" {}
 variable "public_key_path" {}
 variable "public_ip_address" {}
 variable "amazon_linux_ami_id" {}
-variable "windows_machine_ami_id" {
-  
-}
+
 
 resource "aws_key_pair" "testing_key_pair" {
   key_name   = "my test key"
@@ -34,8 +32,8 @@ resource "aws_security_group" "my_custom_sg" {
         ]
     }
     ingress {
-      from_port = 80
-      to_port = 80
+      from_port = 8000
+      to_port = 8000
       protocol = "tcp"
       cidr_blocks = [ 
         "0.0.0.0/0"
