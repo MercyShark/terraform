@@ -1,8 +1,23 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
 provider "aws" {
   region = "ap-south-1"
 }
 
-# IAM Role for Lambda
+variable "smtp_user" {
+}
+variable "smtp_password" {
+}
+variable "sender_email" {
+}
+
 resource "aws_iam_role" "lambda_role" {
   name = "lambda_exec_role"
 
@@ -33,7 +48,16 @@ resource "aws_lambda_function" "my_lambda" {
 
   filename         = "${path.module}/function.zip"
   source_code_hash = filebase64sha256("${path.module}/function.zip")
+
+  environment {
+    variables = {
+      SMTP_USER = var.smtp_user
+      SMTP_PASSWORD = var.smtp_password
+      SENDER_EMAIL  = var.sender_email
+    }
+  }
 }
+
 
 resource "aws_lambda_function_url" "my_lambda_url" {
     function_name = aws_lambda_function.my_lambda.function_name
