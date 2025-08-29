@@ -49,6 +49,7 @@ resource "aws_lambda_function" "my_lambda" {
   filename         = "${path.module}/function.zip"
   source_code_hash = filebase64sha256("${path.module}/function.zip")
 
+  timeout = 10
   environment {
     variables = {
       SMTP_USER = var.smtp_user
