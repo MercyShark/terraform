@@ -64,3 +64,7 @@ resource "aws_s3_bucket_policy" "my_custom_public_policy" {
         }]
   })
 }
+
+output "s3_website_url" {
+  value = aws_s3_bucket_website_configuration.my_website.website_endpoint
+}
