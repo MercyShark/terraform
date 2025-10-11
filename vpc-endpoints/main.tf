@@ -92,16 +92,7 @@ resource "aws_iam_instance_profile" "ssm_profile" {
   role = aws_iam_role.ssm_role.name
 }
 
-resource "aws_instance" "private" {
-  ami                    = "ami-0f9708d1cd2cfee41"
-  instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.private.id
-  associate_public_ip_address = false
-  tags = {
-    Name = "PrivateInstance"
-  }
-  iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
-}
+
 
 variable "region" {
   default = "ap-south-1"
@@ -152,3 +143,15 @@ resource "aws_security_group" "ssm_https" {
 }
 
 
+
+
+resource "aws_instance" "private" {
+  ami                    = "ami-0f9708d1cd2cfee41"
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.private.id
+  associate_public_ip_address = false
+  tags = {
+    Name = "PrivateInstance"
+  }
+  iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
+}
