@@ -99,7 +99,7 @@ resource "null_resource" "upload_files" {
     type        = "ssh"
     user        = "ubuntu"
     private_key = file(var.private_key_path)
-    host        = aws_instance.ubuntu_instances[0].public_ip
+    host        = aws_eip.my_eip.public_ip
   }
 
   provisioner "file" {
@@ -116,8 +116,6 @@ resource "null_resource" "upload_files" {
     inline = [
       "sudo mv /home/ubuntu/index.html /var/www/html/index.html",
       "sudo mv /home/ubuntu/video.mp4 /var/www/html/video.mp4",
-      "sudo systemctl restart nginx",
-      "sudo certbot --nginx -d isprettiestwomaninthemilkeyway.com -d www.isprettiestwomaninthemilkeyway.com --non-interactive --agree-tos -m test@gmail.com --redirect --expand"
     ]
   }
 }
